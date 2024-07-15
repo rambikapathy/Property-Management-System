@@ -26,6 +26,9 @@ def main_window():
     tk.Label(window, text="", bg="blue").pack()
     tk.Button(window, text="Agent Login", width=20, height=2, command=lambda: AgentLoginWindow(window)).pack(pady=10)
     tk.Button(window, text="Agent Registration", width=20, height=2, command=lambda: AgentRegisterWindow(window)).pack(pady=10)
+    
+    # Exit button to close the application
+    tk.Button(window, text="Exit", width=20, height=2, command=window.destroy).pack(pady=10)
 
     window.mainloop()
 
