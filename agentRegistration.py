@@ -1,13 +1,34 @@
 import tkinter as tk
-import os
 from tkinter import Label, Entry, Button, messagebox
-import webbrowser
+import sqlite3
+import os
+import re  # Import regular expressions module
+from datetime import datetime
 
 def AgentRegisterWindow(parent_window):
-    registrationWindow = tk.Toplevel(parent_window, bg="blue")
+    registrationWindow = tk.Toplevel(parent_window, bg="black")
     registrationWindow.title("Agent Registration")
-    registrationWindow.geometry("400x400")
+    registrationWindow.geometry("450x650")  
+    registrationWindow.resizable(False, False)  # Resizing disabled
     
+    # Initiate SQLite database to store agent login/registration credentials.
+    conn = sqlite3.connect('agents.db')
+    c = conn.cursor()
+
+    # Implement the table for estate agents table if it doesn't exist
+    c.execute('''CREATE TABLE IF NOT EXISTS agents (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    surname TEXT NOT NULL,
+                    branch TEXT NOT NULL,
+                    employee_id TEXT NOT NULL UNIQUE,
+                    username TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL,
+                    registration_date TEXT NOT NULL
+                )''')
+
+    conn.commit()
+
     # Define variables to store agent's inputs in registration window.
     varName = tk.StringVar()
     varSurname = tk.StringVar()
@@ -17,32 +38,32 @@ def AgentRegisterWindow(parent_window):
     varPassword = tk.StringVar()
     varAgree = tk.BooleanVar()
 
-    tk.Label(registrationWindow, text="Name:", width=15, height=1, font=("Times New Roman", 12), bg="blue", fg="white").grid(row=0, column=0, padx=10, pady=10)
-    nameInput = Entry(registrationWindow, textvariable=varName, bg="white", width=30)
+    tk.Label(registrationWindow, text="Name:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=0, column=0, padx=10, pady=10)
+    nameInput = Entry(registrationWindow, textvariable=varName, bg="white",fg="Black",  width=30)
     nameInput.grid(row=0, column=1, padx=10, pady=10)
 
-    tk.Label(registrationWindow, text="Surname:", width=15, height=1, font=("Times New Roman", 12), bg="blue", fg="white").grid(row=1, column=0, padx=10, pady=10)
-    surnameInput = Entry(registrationWindow, textvariable=varSurname, bg="white", width=30)
+    tk.Label(registrationWindow, text="Surname:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=1, column=0, padx=10, pady=10)
+    surnameInput = Entry(registrationWindow, textvariable=varSurname, bg="white",fg="Black",  width=30)
     surnameInput.grid(row=1, column=1, padx=10, pady=10)
 
-    tk.Label(registrationWindow, text="Branch:", width=15, height=1, font=("Times New Roman", 12), bg="blue", fg="white").grid(row=2, column=0, padx=10, pady=10)
-    branchInput = Entry(registrationWindow, textvariable=varBranch, bg="white", width=30)
+    tk.Label(registrationWindow, text="Branch:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=2, column=0, padx=10, pady=10)
+    branchInput = Entry(registrationWindow, textvariable=varBranch, bg="white",fg="Black",  width=30)
     branchInput.grid(row=2, column=1, padx=10, pady=10)
 
-    tk.Label(registrationWindow, text="Employee ID:", width=15, height=1, font=("Times New Roman", 12), bg="blue", fg="white").grid(row=3, column=0, padx=10, pady=10)
-    employeeIDinput = Entry(registrationWindow, textvariable=varEmployeeID, bg="white", width=30)
+    tk.Label(registrationWindow, text="Employee ID:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=3, column=0, padx=10, pady=10)
+    employeeIDinput = Entry(registrationWindow, textvariable=varEmployeeID, bg="white",fg="Black",  width=30)
     employeeIDinput.grid(row=3, column=1, padx=10, pady=10)
 
-    tk.Label(registrationWindow, text="Username:", width=15, height=1, font=("Times New Roman", 12), bg="blue", fg="white").grid(row=4, column=0, padx=10, pady=10)
-    usernameInput = Entry(registrationWindow, textvariable=varUsername, bg="white", width=30)
+    tk.Label(registrationWindow, text="Username:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=4, column=0, padx=10, pady=10)
+    usernameInput = Entry(registrationWindow, textvariable=varUsername, bg="white",fg="Black",  width=30)
     usernameInput.grid(row=4, column=1, padx=10, pady=10)
 
-    tk.Label(registrationWindow, text="Password:", width=15, height=1, font=("Times New Roman", 12), bg="blue", fg="white").grid(row=5, column=0, padx=10, pady=10)
-    passwordInput = Entry(registrationWindow, textvariable=varPassword, bg="white", show="*", width=30)
+    tk.Label(registrationWindow, text="Password:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=5, column=0, padx=10, pady=10)
+    passwordInput = Entry(registrationWindow, textvariable=varPassword, bg="white",fg="Black", show="*", width=30)
     passwordInput.grid(row=5, column=1, padx=10, pady=10)
 
     # Users have to validate terms and conditions checkbox
-    termsandconditions = tk.Checkbutton(registrationWindow, text="I agree to the terms and conditions", variable=varAgree, bg="blue", fg="white", command=lambda: submitButton.config(state="normal" if varAgree.get() else "disabled"))
+    termsandconditions = tk.Checkbutton(registrationWindow, text="I agree to the terms and conditions", variable=varAgree, bg="black", fg="white", command=lambda: submitButton.config(state="normal" if varAgree.get() else "disabled"))
     termsandconditions.grid(row=6, column=0, columnspan=2, pady=10)
 
     # Guide to GDPR for users who wish to find how my system stores and processed data 
@@ -53,10 +74,9 @@ def AgentRegisterWindow(parent_window):
         else:
             messagebox.showerror("File Not Found")
 
-    pdfLink = tk.Label(registrationWindow, text="Find out about how we process your data under GDPR  regulations", font=("Arial", 10), bg="blue", fg="white", cursor="hand2")
+    pdfLink = tk.Label(registrationWindow, text="Find out about how we process your data under GDPR  regulations", font=("Arial", 10), bg="black", fg="white", cursor="hand2")
     pdfLink.grid(row=7, column=0, columnspan=2, pady=10)
     pdfLink.bind("<Button-1>", lambda e: GDPRguide())
-    
     
     def registrationSubmission():
         if varAgree.get():
@@ -67,26 +87,60 @@ def AgentRegisterWindow(parent_window):
             username = varUsername.get()
             password = varPassword.get()
             
-            # Example of using the data (you can replace with your database code)
-            messagebox.showinfo("Registration", f"Registered:\nName: {name}\nSurname: {surname}\nBranch: {branchName}\nEmployee ID: {employeeID}\nUsername: {username}\nPassword: {password}")
+            # Validate password complexity to help strengthen security within system (should be minimum 8 characters, contain 1 number, 1 symbol)
+            if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+                messagebox.showerror("Password Requirement", "Password must be at least 8 characters long and contain at least one number and one special symbol.")
+                return
             
-            # Clear the entries after submission
-            varName.set("")
-            varSurname.set("")
-            varBranch.set("")
-            varEmployeeID.set("")
-            varUsername.set("")
-            varPassword.set("")
+            try:
+                # Insert agent's input into database if unique constraints are met
+                c.execute('''INSERT INTO agents (name, surname, branch, employee_id, username, password, registration_date)
+                             VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                          (name, surname, branchName, employeeID, username, password, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                conn.commit()
+                
             
-            # Close the registration window
-            registrationWindow.destroy()
-            
-            # Open the login window
-            from agentLogin import AgentLoginWindow
-            AgentLoginWindow(parent_window)
+                messagebox.showinfo("Registration", f"Registered:\nName: {name}\nSurname: {surname}\nBranch: {branchName}\nEmployee ID: {employeeID}\nUsername: {username}\nPassword: {password}")
+                
+                # Clear the entries after submission
+                varName.set("")
+                varSurname.set("")
+                varBranch.set("")
+                varEmployeeID.set("")
+                varUsername.set("")
+                varPassword.set("")
+                
+                # Close the registration window
+                registrationWindow.destroy()
+                
+                # Open the login window asking agents to login following succesfull registration.
+               
+            #if username or employee id exists in database then void registration
+            except sqlite3.IntegrityError as e:
+                if 'UNIQUE constraint failed' in str(e):
+                    messagebox.showerror("Registration Failed", "Employee ID or Username already exists.")
         else:
             messagebox.showwarning("Agreement Required", "You must agree to the terms and conditions to register.")
 
     # Disable the submit button if terms & conditions are not checked by the agent whilst registering.
     submitButton = tk.Button(registrationWindow, text="Submit Registration", state="disabled", command=registrationSubmission)
     submitButton.grid(row=8, column=0, columnspan=2, pady=20)
+
+    # Exit button to close all applications
+    def exitApplication():
+        conn.close()  # Close database 
+        parent_window.destroy()  # Close  main window
+
+    exitButton = tk.Button(registrationWindow, text="Exit Application", command=exitApplication)
+    exitButton.grid(row=9, column=0, columnspan=2, pady=10)
+
+    registrationWindow.mainloop()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Agent Management System")
+    root.geometry("400x300")
+    root.configure(bg="black")
+
+    # Start the agent registration window
+    AgentRegisterWindow(root)

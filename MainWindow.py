@@ -8,22 +8,22 @@ def main_window():
     window = tk.Tk()
     window.geometry("400x300")
     window.title("Rishi's Property Management System")
-    window.configure(bg="blue")
+    window.configure(bg="black")
     
     # Function to update the time label
-    def update_time():
-        current_time = time.strftime('%Y-%m-%d %H:%M:%S')
-        time_label.config(text=f"Current Date & Time: {current_time}")
-        window.after(1000, update_time)  # Update every second
+    def updateTime():
+        currentTime = time.strftime('%d-%m-%Y %H:%M:%S')
+        displayTime.config(text=f" {currentTime}",font=("Comic Sans", 25))
+        window.after(1000, updateTime)  # Update every second
     
     # Label and display current date and time on application
-    time_label = tk.Label(window, text="", font=("Arial", 12), bg="blue", fg="white")
-    time_label.pack(pady=10)
+    displayTime = tk.Label(window, text="", font=("Arial", 12), bg="black", fg="white")
+    displayTime.pack(pady=10)
     
     # Start updating the time label each second
-    update_time()
+    updateTime()
 
-    tk.Label(window, text="", bg="blue").pack()
+    tk.Label(window, text="", bg="black").pack()
     tk.Button(window, text="Agent Login", width=20, height=2, command=lambda: AgentLoginWindow(window)).pack(pady=10)
     tk.Button(window, text="Agent Registration", width=20, height=2, command=lambda: AgentRegisterWindow(window)).pack(pady=10)
     
