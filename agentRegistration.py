@@ -4,6 +4,7 @@ import sqlite3
 import os
 import re  # Import regular expressions module
 from datetime import datetime
+import webbrowser
 
 def AgentRegisterWindow(parent_window):
     registrationWindow = tk.Toplevel(parent_window, bg="black")
@@ -70,7 +71,7 @@ def AgentRegisterWindow(parent_window):
     def GDPRguide():
         filePath = "/Users/nikhishaambi/Desktop/Research Project/Guide to GDPR.pdf"
         if os.path.exists(filePath):
-            webbrowser.open(f"file://{filePath}")
+            webbrowser.open(f"file:///Users/nikhishaambi/Desktop/Property-Management-System-main")
         else:
             messagebox.showerror("File Not Found")
 
