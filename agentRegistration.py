@@ -1,8 +1,8 @@
 import tkinter as tk
-from tkinter import Label, Entry, Button, messagebox
+from tkinter import Label, Entry, Button, messagebox, ttk
 import sqlite3
 import os
-import re  # Import regular expressions module
+import re
 from datetime import datetime
 import webbrowser
 
@@ -27,55 +27,56 @@ def AgentRegisterWindow(parent_window):
                     password TEXT NOT NULL,
                     registration_date TEXT NOT NULL
                 )''')
-
     conn.commit()
 
     # Define variables to store agent's inputs in registration window.
     varName = tk.StringVar()
     varSurname = tk.StringVar()
-    varBranch = tk.StringVar()
+    varBranch = tk.StringVar()  # This will store the selected branch
     varEmployeeID = tk.StringVar()
     varUsername = tk.StringVar()
     varPassword = tk.StringVar()
     varAgree = tk.BooleanVar()
 
     tk.Label(registrationWindow, text="Name:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=0, column=0, padx=10, pady=10)
-    nameInput = Entry(registrationWindow, textvariable=varName, bg="white",fg="Black",  width=30)
+    nameInput = Entry(registrationWindow, textvariable=varName, bg="white", fg="black", width=30)
     nameInput.grid(row=0, column=1, padx=10, pady=10)
 
     tk.Label(registrationWindow, text="Surname:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=1, column=0, padx=10, pady=10)
-    surnameInput = Entry(registrationWindow, textvariable=varSurname, bg="white",fg="Black",  width=30)
+    surnameInput = Entry(registrationWindow, textvariable=varSurname, bg="white", fg="black", width=30)
     surnameInput.grid(row=1, column=1, padx=10, pady=10)
 
     tk.Label(registrationWindow, text="Branch:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=2, column=0, padx=10, pady=10)
-    branchInput = Entry(registrationWindow, textvariable=varBranch, bg="white",fg="Black",  width=30)
+    branchOptions = ["Grimsby", "Lincoln", "Newark", "Gainsborough", "Doncaster", "Scunthorpe"]
+    branchInput = ttk.Combobox(registrationWindow, textvariable=varBranch, values=branchOptions, state="readonly", width=27)
     branchInput.grid(row=2, column=1, padx=10, pady=10)
+    branchInput.set("Select Branch")  # Placeholder text
 
     tk.Label(registrationWindow, text="Employee ID:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=3, column=0, padx=10, pady=10)
-    employeeIDinput = Entry(registrationWindow, textvariable=varEmployeeID, bg="white",fg="Black",  width=30)
+    employeeIDinput = Entry(registrationWindow, textvariable=varEmployeeID, bg="white", fg="black", width=30)
     employeeIDinput.grid(row=3, column=1, padx=10, pady=10)
 
     tk.Label(registrationWindow, text="Username:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=4, column=0, padx=10, pady=10)
-    usernameInput = Entry(registrationWindow, textvariable=varUsername, bg="white",fg="Black",  width=30)
+    usernameInput = Entry(registrationWindow, textvariable=varUsername, bg="white", fg="black", width=30)
     usernameInput.grid(row=4, column=1, padx=10, pady=10)
 
     tk.Label(registrationWindow, text="Password:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=5, column=0, padx=10, pady=10)
-    passwordInput = Entry(registrationWindow, textvariable=varPassword, bg="white",fg="Black", show="*", width=30)
+    passwordInput = Entry(registrationWindow, textvariable=varPassword, bg="white", fg="black", show="*", width=30)
     passwordInput.grid(row=5, column=1, padx=10, pady=10)
 
     # Users have to validate terms and conditions checkbox
     termsandconditions = tk.Checkbutton(registrationWindow, text="I agree to the terms and conditions", variable=varAgree, bg="black", fg="white", command=lambda: submitButton.config(state="normal" if varAgree.get() else "disabled"))
     termsandconditions.grid(row=6, column=0, columnspan=2, pady=10)
 
-    # Guide to GDPR for users who wish to find how my system stores and processed data 
+    # Guide to GDPR for users who wish to find how my system stores and processes data
     def GDPRguide():
-        filePath = "/Users/nikhishaambi/Desktop/Research Project/Guide to GDPR.pdf"
+        filePath = "Guide to GDPR.pdf"  # Adjust path if needed
         if os.path.exists(filePath):
-            webbrowser.open(f"file:///Users/nikhishaambi/Desktop/Property-Management-System-main")
+            webbrowser.open(f"file://{os.path.abspath(filePath)}")
         else:
-            messagebox.showerror("File Not Found")
+            messagebox.showerror("File Not Found", "GDPR guide not found.")
 
-    pdfLink = tk.Label(registrationWindow, text="Find out about how we process your data under GDPR  regulations", font=("Arial", 10), bg="black", fg="white", cursor="hand2")
+    pdfLink = tk.Label(registrationWindow, text="Find out about how we process your data under GDPR regulations", font=("Arial", 10), bg="black", fg="white", cursor="hand2")
     pdfLink.grid(row=7, column=0, columnspan=2, pady=10)
     pdfLink.bind("<Button-1>", lambda e: GDPRguide())
     
@@ -88,7 +89,7 @@ def AgentRegisterWindow(parent_window):
             username = varUsername.get()
             password = varPassword.get()
             
-            # Validate password complexity to help strengthen security within system (should be minimum 8 characters, contain 1 number, 1 symbol)
+            # Validate password complexity. Has to be minimum of 8 characters, 1 number and 1 symbol.
             if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
                 messagebox.showerror("Password Requirement", "Password must be at least 8 characters long and contain at least one number and one special symbol.")
                 return
@@ -100,13 +101,12 @@ def AgentRegisterWindow(parent_window):
                           (name, surname, branchName, employeeID, username, password, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                 conn.commit()
                 
-            
-                messagebox.showinfo("Registration", f"Registered:\nName: {name}\nSurname: {surname}\nBranch: {branchName}\nEmployee ID: {employeeID}\nUsername: {username}\nPassword: {password}")
+                messagebox.showinfo("Registration", f"Registered:\nName: {name}\nSurname: {surname}\nBranch: {branchName}\nEmployee ID: {employeeID}\nUsername: {username}")
                 
                 # Clear the entries after submission
                 varName.set("")
                 varSurname.set("")
-                varBranch.set("")
+                varBranch.set("Select Branch")
                 varEmployeeID.set("")
                 varUsername.set("")
                 varPassword.set("")
@@ -114,25 +114,18 @@ def AgentRegisterWindow(parent_window):
                 # Close the registration window
                 registrationWindow.destroy()
                 
-                # Open the login window asking agents to login following succesfull registration.
-               
-            #if username or employee id exists in database then void registration
             except sqlite3.IntegrityError as e:
                 if 'UNIQUE constraint failed' in str(e):
                     messagebox.showerror("Registration Failed", "Employee ID or Username already exists.")
         else:
             messagebox.showwarning("Agreement Required", "You must agree to the terms and conditions to register.")
 
-    # Disable the submit button if terms & conditions are not checked by the agent whilst registering.
+    # Disable the submit button if terms & conditions are not checked
     submitButton = tk.Button(registrationWindow, text="Submit Registration", state="disabled", command=registrationSubmission)
     submitButton.grid(row=8, column=0, columnspan=2, pady=20)
 
-    # Exit button to close all applications
-    def exitApplication():
-        conn.close()  # Close database 
-        parent_window.destroy()  # Close  main window
-
-    exitButton = tk.Button(registrationWindow, text="Exit Application", command=exitApplication)
+    # Exit button to close the registration window
+    exitButton = tk.Button(registrationWindow, text="Exit", command=registrationWindow.destroy)
     exitButton.grid(row=9, column=0, columnspan=2, pady=10)
 
     registrationWindow.mainloop()

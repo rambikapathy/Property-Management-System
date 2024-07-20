@@ -35,17 +35,17 @@ def AgentLoginWindow(parent_window):
 
     tk.Button(loginWindow, text="Login", command=login).pack(pady=10)
 
-    def exitApplication():
+    def closeWindow():
         conn.close()
         parent_window.destroy()
         loginWindow.destroy()
 
-    tk.Button(loginWindow, text="Exit Application", command=exitApplication).pack(pady=10)
+    tk.Button(loginWindow, text="Close Window", command=closeWindow).pack(pady=10)
 
-    loginWindow.protocol("WM_DELETE_WINDOW", exitApplication)
+    loginWindow.protocol("WM_DELETE_WINDOW", closeWindow)
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Agent Management System")
+    root.title("Rishi's Property Management System")
     root.geometry("400x300")
     root
