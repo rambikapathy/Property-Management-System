@@ -42,8 +42,8 @@ def updatePropertyWindow():
     updateDateInput.pack(pady=5)
 
     tk.Label(updatePropertyListing, text="New Vendor:", bg="black", fg="white").pack(pady=5)
-    newVendorInput = tk.Entry(updatePropertyListing)
-    newVendorInput.pack(pady=5)
+    updateVendorInput = tk.Entry(updatePropertyListing)
+    updateVendorInput.pack(pady=5)
 
     def submitUpdate():
         conn = createConnection()
@@ -54,7 +54,7 @@ def updatePropertyWindow():
         updateBedroom = int(updateBedroomsInput.get())
         updateSaleCategory = updateCategoryInput.get()
         updateMarketDate = updateDateInput.get()
-        updateVendorContact = newVendorInput.get()
+        updateVendorContact = updateVendorInput.get()
 
         try:
             c.execute("UPDATE properties SET address=?, asking_price=?, bedrooms=?, category=?, market_date=?, vendor=? WHERE id=?",

@@ -1,15 +1,55 @@
 import tkinter as tk
-from tkinter import Label, Entry, Button, messagebox, ttk
+from tkinter import Label, Entry, Button, Checkbutton, messagebox, ttk
 import sqlite3
 import os
 import re
 from datetime import datetime
 import webbrowser
+from PIL import Image, ImageDraw, ImageFont
+import random
+import string
+
+#Captcha to help increase security during agent registration
+def generateCAPTCHA(length=6):
+    """Generate a random string of uppercase letters and digits."""
+    letters_and_digits = string.ascii_uppercase + string.digits
+    return ''.join(random.choice(letters_and_digits) for _ in range(length))
+
+def initiateCaptcha(text, image_size=(200, 60), font_size=36):
+    """Create a CAPTCHA image with the given text."""
+    # Initiate CAPTCHA
+    image = Image.new('RGB', image_size, color=(255, 255, 255))
+    draw = ImageDraw.Draw(image)
+
+    try:
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except IOError:
+        font = ImageFont.load_default()
+
+    #Textbox size for CAPTCHA
+    text_bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_height = text_bbox[3] - text_bbox[1]
+    text_x = (image_size[0] - text_width) // 2
+    text_y = (image_size[1] - text_height) // 2
+    draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
+
+    #Generate random lines and dots for CAPTCHA image to help increase security
+    for _ in range(20):
+        x1, y1 = random.randint(0, image_size[0]), random.randint(0, image_size[1])
+        x2, y2 = x1 + random.randint(-10, 10), y1 + random.randint(-10, 10)
+        draw.line((x1, y1, x2, y2), fill=(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), width=1)
+
+    for _ in range(30):
+        x, y = random.randint(0, image_size[0]), random.randint(0, image_size[1])
+        draw.point((x, y), fill=(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+
+    return image
 
 def AgentRegisterWindow(parent_window):
     registrationWindow = tk.Toplevel(parent_window, bg="black")
     registrationWindow.title("Agent Registration")
-    registrationWindow.geometry("450x650")  
+    registrationWindow.geometry("450x750")  
     registrationWindow.resizable(False, False)  # Resizing disabled
     
     # Initiate SQLite database to store agent login/registration credentials.
@@ -32,12 +72,14 @@ def AgentRegisterWindow(parent_window):
     # Define variables to store agent's inputs in registration window.
     varName = tk.StringVar()
     varSurname = tk.StringVar()
-    varBranch = tk.StringVar()  # This will store the selected branch
+    varBranch = tk.StringVar()  # This will store the selected branch i.e (Grimsby, Lincoln, etc)
     varEmployeeID = tk.StringVar()
     varUsername = tk.StringVar()
     varPassword = tk.StringVar()
     varAgree = tk.BooleanVar()
+    varCaptcha = tk.StringVar()  # To store CAPTCHA text entered by the user
 
+    # Create and place widgets
     tk.Label(registrationWindow, text="Name:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=0, column=0, padx=10, pady=10)
     nameInput = Entry(registrationWindow, textvariable=varName, bg="white", fg="black", width=30)
     nameInput.grid(row=0, column=1, padx=10, pady=10)
@@ -64,11 +106,25 @@ def AgentRegisterWindow(parent_window):
     passwordInput = Entry(registrationWindow, textvariable=varPassword, bg="white", fg="black", show="*", width=30)
     passwordInput.grid(row=5, column=1, padx=10, pady=10)
 
-    # Users have to validate terms and conditions checkbox
-    termsandconditions = tk.Checkbutton(registrationWindow, text="I agree to the terms and conditions", variable=varAgree, bg="black", fg="white", command=lambda: submitButton.config(state="normal" if varAgree.get() else "disabled"))
-    termsandconditions.grid(row=6, column=0, columnspan=2, pady=10)
+    # Generate CAPTCHA
+    captchaText = generateCAPTCHA()
+    captchaImage = initiateCaptcha(captchaText)
+    captchaImage.save('captcha.png')
 
-    # Guide to GDPR for users who wish to find how my system stores and processes data
+    # Display CAPTCHA image in Tkinter window
+    captchaPhoto = tk.PhotoImage(file='captcha.png')
+    captchaLabel = tk.Label(registrationWindow, image=captchaPhoto)
+    captchaLabel.image = captchaPhoto  # Keep a reference to avoid garbage collection
+    captchaLabel.grid(row=6, column=0, columnspan=2, pady=10)
+
+    tk.Label(registrationWindow, text="Enter CAPTCHA:", width=15, height=1, font=("Open Sans", 12), bg="black", fg="white").grid(row=7, column=0, padx=10, pady=10)
+    captchaInput = Entry(registrationWindow, textvariable=varCaptcha, bg="white", fg="black", width=30)
+    captchaInput.grid(row=7, column=1, padx=10, pady=10)
+
+    # Users have to validate terms and conditions checkbox
+    termsandconditions = Checkbutton(registrationWindow, text="I agree to the terms and conditions", variable=varAgree, bg="black", fg="white", command=lambda: submitButton.config(state="normal" if varAgree.get() else "disabled"))
+    termsandconditions.grid(row=8, column=0, columnspan=2, pady=10)
+
     def GDPRguide():
         filePath = "Guide to GDPR.pdf"  # Adjust path if needed
         if os.path.exists(filePath):
@@ -77,10 +133,12 @@ def AgentRegisterWindow(parent_window):
             messagebox.showerror("File Not Found", "GDPR guide not found.")
 
     pdfLink = tk.Label(registrationWindow, text="Find out about how we process your data under GDPR regulations", font=("Arial", 10), bg="black", fg="white", cursor="hand2")
-    pdfLink.grid(row=7, column=0, columnspan=2, pady=10)
+    pdfLink.grid(row=9, column=0, columnspan=2, pady=10)
     pdfLink.bind("<Button-1>", lambda e: GDPRguide())
-    
+
     def registrationSubmission():
+        nonlocal captchaText, captchaImage, captchaPhoto  # Declare nonlocal variables
+
         if varAgree.get():
             name = varName.get()
             surname = varSurname.get()
@@ -88,7 +146,20 @@ def AgentRegisterWindow(parent_window):
             employeeID = varEmployeeID.get()
             username = varUsername.get()
             password = varPassword.get()
-            
+            captcha = varCaptcha.get()
+
+            # Validate CAPTCHA
+            if captcha.upper() != captchaText:
+                messagebox.showerror("CAPTCHA Error", "CAPTCHA verification failed. Please try again.")
+                # Regenerate CAPTCHA and update the image
+                captchaText = generateCAPTCHA()
+                captchaImage = initiateCaptcha(captchaText)
+                captchaImage.save('captcha.png')
+                captchaPhoto = tk.PhotoImage(file='captcha.png')
+                captchaLabel.config(image=captchaPhoto)
+                captchaLabel.image = captchaPhoto
+                return
+
             # Validate password complexity. Has to be minimum of 8 characters, 1 number and 1 symbol.
             if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
                 messagebox.showerror("Password Requirement", "Password must be at least 8 characters long and contain at least one number and one special symbol.")
@@ -110,6 +181,7 @@ def AgentRegisterWindow(parent_window):
                 varEmployeeID.set("")
                 varUsername.set("")
                 varPassword.set("")
+                varCaptcha.set("")
                 
                 # Close the registration window
                 registrationWindow.destroy()
@@ -121,18 +193,18 @@ def AgentRegisterWindow(parent_window):
             messagebox.showwarning("Agreement Required", "You must agree to the terms and conditions to register.")
 
     # Disable the submit button if terms & conditions are not checked
-    submitButton = tk.Button(registrationWindow, text="Submit Registration", state="disabled", command=registrationSubmission)
-    submitButton.grid(row=8, column=0, columnspan=2, pady=20)
+    submitButton = Button(registrationWindow, text="Submit Registration", state="disabled", command=registrationSubmission)
+    submitButton.grid(row=10, column=0, columnspan=2, pady=20)
 
     # Exit button to close the registration window
-    exitButton = tk.Button(registrationWindow, text="Exit", command=registrationWindow.destroy)
-    exitButton.grid(row=9, column=0, columnspan=2, pady=10)
+    exitButton = Button(registrationWindow, text="Exit", command=registrationWindow.destroy)
+    exitButton.grid(row=11, column=0, columnspan=2, pady=10)
 
     registrationWindow.mainloop()
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Agent Management System")
+    root.title("Rishi's Property Management System")
     root.geometry("400x300")
     root.configure(bg="black")
 
