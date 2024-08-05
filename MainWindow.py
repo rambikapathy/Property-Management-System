@@ -14,10 +14,10 @@ def mainWindow():
         buttonFrame = tk.Frame(parent, bg="#F5F5DC")
         buttonFrame.pack(side="left", padx=30)
         buttonSize = 120  
-        buttonWidth = buttonSize + 20  # Extra space for padding
+        buttonWidth = buttonSize + 20  
         circularButton = tk.Canvas(buttonFrame, width=buttonWidth, height=buttonWidth, bg="#F5F5DC", highlightthickness=0)
         circularButton.create_oval(10, 10, buttonSize, buttonSize, fill="#D2B48C", outline="#D2B48C") 
-        circularButton.pack()
+        circularButton.pack() 
 
         # Adjust font size and button dimensions to fit text inside the circle on GUI
         buttonFontSize = 12  
