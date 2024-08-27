@@ -6,7 +6,7 @@ from tkinter import Text
 conn = sqlite3.connect('agents.db')
 c = conn.cursor()
 
-# Create table to store agent's registration entry
+# Create table to store agent's login credentials 
 c.execute('''CREATE TABLE IF NOT EXISTS agents (
                 name TEXT,
                 surname TEXT,
@@ -18,7 +18,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS agents (
 conn.commit()
 
 def insertAgentData(name, surname, branch, employee_id, username, password):
-    # Insert data into SQLite database
+    # Insert data into SQLite database named 'agent'
     c.execute("INSERT INTO agents (name, surname, branch, employee_id, username, password) VALUES (?, ?, ?, ?, ?, ?)",
               (name, surname, branch, employee_id, username, password))
     conn.commit()

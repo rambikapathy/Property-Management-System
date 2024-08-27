@@ -150,7 +150,7 @@ def AgentRegisterWindow(parent_window):
     termsandconditions.grid(row=8, column=0, columnspan=2, pady=10)
 
     def GDPRguide():
-        filePath = "Guide to GDPR.pdf"  # Adjust path if needed
+        filePath = "Guide to GDPR.pdf"  
         if os.path.exists(filePath):
             webbrowser.open(f"file://{os.path.abspath(filePath)}")
         else:
@@ -175,7 +175,7 @@ def AgentRegisterWindow(parent_window):
             # Validate CAPTCHA
             if captcha.upper() != captchaText:
                 messagebox.showerror("CAPTCHA Error", "CAPTCHA verification failed. Please try again.")
-                # Regenerate new CAPTCHA and update the image
+                # Regenerate new CAPTCHA upon each registraton interval and update the image
                 captchaText = generateCAPTCHA()
                 captchaImage = initiateCaptcha(captchaText)
                 captchaImage.save('captcha.png')

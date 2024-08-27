@@ -5,13 +5,13 @@ import qrcode
 import random
 import string
 import os
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk 
 from bcrypt import hashpw, gensalt
 from mainMenu import MainMenuWindow  
 from agentRegistration import AgentRegisterWindow
 
-#iniate QR code PNG.
-def initiateQRCode(data, filename="qrcode.png"): 
+#Multifactor Authenticaiton implementation through QR code scanning.
+def initiateQRCode(data, filename="qrcode.png"):  #iniate QR code image.
     """Generate a QR code image with the given data."""
     qr = qrcode.QRCode(
         version=1,
@@ -25,7 +25,7 @@ def initiateQRCode(data, filename="qrcode.png"):
     img.save(filename)
 
 def initiateOTPcode(length=6):
-    """Generate a 6-digit OTP."""
+    """Generate a 6-digit OTP."""#OTP code is unique 6 digit long that is regenerated upon each login phase.
     return ''.join(random.choices(string.digits, k=length))
 
 #Open login window
@@ -33,7 +33,7 @@ def AgentLoginWindow(parent_window):
     def closeWindow():
         if os.path.exists(qrCodeImage):
             os.remove(qrCodeImage)  
-            # Clean up and regenerate QR code file at the end of each login session
+            # Clean up and regenerate QR code image at the end of each login session. this helps to generate unique code during each login segment
         conn.close()
         loginWindow.destroy()
         # Reopen the parent window
@@ -46,7 +46,8 @@ def AgentLoginWindow(parent_window):
         AgentRegisterWindow(loginWindow)  
         # Open the registration window
 
-# Hide the parent window (Main Window.py)
+# Hide the parent window (Main Window.py), when login or registration window is open, 
+#helps reduce performance overload and user experience complexity.
     parent_window.withdraw()  
 
     loginWindow = tk.Toplevel(parent_window)
@@ -55,7 +56,7 @@ def AgentLoginWindow(parent_window):
     loginWindow.resizable(False, False)
     loginWindow.configure(bg="#F5F5DC")  
 
-    #connect to database
+    #connect to agent database to retreive all agent login credentials.
     conn = sqlite3.connect('agents.db')
     c = conn.cursor()
 
@@ -82,7 +83,7 @@ def AgentLoginWindow(parent_window):
     qrCode.photo = qrPhoto  # Keep a reference to avoid garbage collection
     qrCode.pack(pady=10)
 
-    #Ask user to input OTP code seen whilst scanning QR code.
+    #Ask user to input OTP code seen when scanning QR code.
     tk.Label(loginWindow, text="Please enter QR code:", bg="#F5F5DC", fg="black").pack(pady=10)
     otpInput = tk.Entry(loginWindow)
     otpInput.pack(pady=5)
@@ -99,14 +100,14 @@ def AgentLoginWindow(parent_window):
 
         c.execute('SELECT password FROM agents WHERE username = ?', (username,))
         storedPassword = c.fetchone()
-    # Open the MainMenu window on successful login
+    # Open  MainMenu window if login successful
         if storedPassword and storedPassword[0] == password:
             messagebox.showinfo("Login Successful", "Welcome, Agent!")
             MainMenuWindow(loginWindow) 
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")
 
-    #Buttons
+    #Buttons/Widgets
     tk.Button(loginWindow, text="Login", command=login, bg="#8B4513", fg="white").pack(pady=10)
     tk.Button(loginWindow, text="Register", command=openRegistrationWindow, bg="#8B4513", fg="white").pack(pady=10)
     tk.Button(loginWindow, text="Close Window", command=closeWindow, bg="#8B4513", fg="white").pack(pady=10)
