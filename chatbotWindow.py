@@ -1,49 +1,61 @@
 import tkinter as tk
-import openai
 from tkinter import scrolledtext
 
-# Intiate API Key
-def userQuestion(question):
-    openai.api_key = 'YOUR_OPENAI_API_KEY'  
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "I am a chat assistant and am helpful at assisting with property management queries and questions regarding the UK property market industry."},
-            {"role": "user", "content": question}
-        ]
-    )
-    
-    answer = response['choices'][0]['message']['content'].strip()
-    return answer
+#function to iniate query response.
+def initiateresponses(file_path):
+    responses = {}#optimise empty dictionary for new chat thread.
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                if '|' in line:
+                    #split the line into queries
+                    query, response = line.strip().split('|', 1)
+                    responses[query.lower()] = response
+    except FileNotFoundError:
+        #if response.txt not found, output error message.
+        print(f"Error: {file_path} not found.")
+    return responses
 
-# Open FAQ window
-def chatBotWindow():
-    FAQwindow = tk.Toplevel()
-    FAQwindow.title("Property Management Chatbot")
-    FAQwindow.geometry("500x600")
-    FAQwindow.configure(bg="black")
+#function to output response to query by retireving answers from 'responses.txt' file.
+def retreiveResponse(query, responses):
+    query = query.lower()
+    return responses.get(query, "I'm sorry, I don't have an answer to your query. Please try another query or contact your manager.")#if answer does not exist, output error message.
 
-    tk.Label(FAQwindow, text="Please type your query below", bg="black", fg="white", font=("Arial", 14)).pack(pady=10)
+#function for agent to input query.
+def inputMessage():
+    user_input = entryBox.get("1.0", 'end-1c').strip()
+    if user_input:
+        chatThread.config(state=tk.NORMAL)
+        chatThread.insert(tk.END, "You: " + user_input + '\n\n')
+        response = retreiveResponse(user_input, responses)
+        chatThread.insert(tk.END, "Bot: " + response + '\n\n')
+        chatThread.config(state=tk.DISABLED)
+        chatThread.yview(tk.END)#thread that outputs previous chat responses 
+        entryBox.delete("1.0", tk.END)#entry box for user to type query.
 
-    # Text box to allow agent to input query
-    queryInput = tk.Entry(FAQwindow, width=50)
-    queryInput.pack(pady=10)
+#function to optimise chatbot window.
+def optimiseFAQ_ChatbotWindow():
+    global chatThread, entryBox, responses
 
-    # ScrolledText to display previous chat conversation
-    chatHistory = scrolledtext.ScrolledText(FAQwindow, wrap=tk.WORD, width=60, height=20)
-    chatHistory.pack(pady=10)
-    chatHistory.insert(tk.END, "Chatbot: How can I assist you with property management queries\n")
+    # upload answers to queries from text file.
+    responses = initiateresponses('responses.txt')
+    root = tk.Tk()
+    root.title("Rishi's Property Management Chatbot")
+    root.geometry("500x600")
 
-    # Function that reads and responds to agent queries
-    def submitAgentQuery():
-        agentQuery = queryInput.get()
-        if agentQuery:
-            chatHistory.insert(tk.END, f"You: {agentQuery}\n")
-            response = userQuestion(agentQuery)
-            chatHistory.insert(tk.END, f"Chatbot: {response}\n\n")
-            queryInput.delete(0, tk.END)
+    # Chat thread
+    chatThread = scrolledtext.ScrolledText(root, bd=1, bg="white", width=50, height=8, font=("Arial", 12))
+    chatThread.config(state=tk.DISABLED)
 
-    tk.Button(FAQwindow, text="Submit", command=submitAgentQuery).pack(pady=10)
+    #Entry box
+    entryBox = tk.Text(root, bd=0, bg="white", width=29, height=2, font=("Arial", 12))
+    #Buttons
+    submitButton = tk.Button(root, font=("Arial", 12, 'bold'), text="Send", width="12", height=5, bd=0, bg="#32de97", activebackground="#3c9d9b", fg='#ffffff', command=inputMessage)
+    chatThread.place(x=6, y=6, height=500, width=480)
+    entryBox.place(x=6, y=520, height=70, width=380)
+    submitButton.place(x=390, y=520, height=70)
 
-    tk.Button(FAQwindow, text="Close Window", command=FAQwindow.destroy).pack(pady=10)
+    root.mainloop()
+
+if __name__ == "__main__":
+    optimiseFAQ_ChatbotWindow()

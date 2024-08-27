@@ -1,0 +1,48 @@
+house prices|House prices in the UK vary greatly depending on location, size, and other factors. As of 2024, the average price in London is significantly higher than in other regions.
+mortgage rates|Mortgage rates in the UK fluctuate based on economic conditions and lender policies. It's best to get the buyer to check with a bank or a mortgage broker for the latest rates.
+buying process|The process of buying a house in the UK includes getting a mortgage, making an offer, hiring a solicitor, conducting surveys, and completing the purchase.
+stamp duty|Stamp Duty Land Tax (SDLT) is a tax paid on property purchases in England and Northern Ireland. The rate depends on the price of the property and whether you’re a first-time buyer.
+help to buy|The Help to Buy scheme was a UK government program that helped first-time buyers with a government loan to buy a new-build home. Check if it's still available as it was due to end in March 2023.
+renting|Renting in the UK involves signing a tenancy agreement, paying a deposit, and possibly going through a referencing process. Prices vary depending on location and property type.
+investment|Investing in UK property can be profitable, but it comes with risks. Consider factors like location, rental yield, and market trends.
+contact|For more specific queries, it's best to contact a local real estate agent or a property consultant.
+
+How do I log in to the system?|To log in, you should be a member of an estate agency and you will need to enter your username and password on the login page. You will then be redirected to scan the QR code and will be required to enter the unique 6 digit code.
+
+How do I add a new property to the database?|Navigate to the "Main Menu" section and click on the second button which labels an icon illustrating a Property. Then click on 'Add Property' to fill in the required details, such as address, number of bedrooms, and price, then submit. Please also note a photo and video of the property is required to be uploaded, otherwise the property will not be added as a new listing.
+
+How do I delete or update a property listing?|Navigate to the "Main Menu" section and click on the second button which labels an icon illustrating a Property. Then click on 'Update or Delete Property', search for the property you want to update or delete, and then enter the property ID in the required fields to make the necessary changes. Make sure you have the correct property ID otherwise the changes will not be made.
+
+Why am I getting an 'Invalid Property ID' error when trying to delete a property?|This is because you do not have the correct property ID or your selected property may have been deleted already or does not exist.
+
+How can I book an appointment for a property viewing?|Navigate to the "Main Menu" section and click on the first button which labels an icon illustrating a Diary, and fill in the required viewer details. Make sure all fields are complete before submitting, otherwise the viewing will not be booked.
+
+Can I view my previous appointments?|Yes, you can view all your scheduled appointments in the Treeview Section in the Diary window section 
+
+What should I do if the system logs me out unexpectedly?|The system is not yet advanced to log out after a series of event, however if you do wish to log back in, kindly re-enter your correct login credentials and ensure you go through face ID recognition
+
+Why is my face ID not being recognized?|Ensure you are in an area with better light and you are positioned to face the camera directly. If the issue continues, please contact your admin or customer support desk on 0208 904 1152.
+
+What happens if I fail the CAPTCHA multiple times?|You will be required to enter the correct CAPTCHA code and system may block your access for a certain number of time.  This is to help preserve the system.
+
+What is the average house price in the UK?|The average house price varies by region. As of 2024, properties in London are significantly more expensive compared to other parts of the UK, with averages exceeding £500,000 in some areas.
+
+What are the current mortgage rates in the UK?|Mortgage rates fluctuate depending on the lender and the Bank of England's base rate. Rates can vary from around 3% to 6% depending on your credit history and the type of mortgage you apply for.
+
+What are the steps involved in buying a house in the UK?|The process includes finding a property, making an offer, applying for a mortgage, hiring a solicitor, conducting surveys, exchanging contracts, and completing the purchase.
+
+What is Stamp Duty, and do I have to pay it?|Stamp Duty Land Tax (SDLT) is a tax paid on property purchases in England and Northern Ireland. First-time buyers may be eligible for relief on properties up to a certain value. The rate depends on the purchase price of the property.
+
+Can I still use the Help to Buy scheme?|The Help to Buy scheme, which assisted first-time buyers with government loans, ended in March 2023. However, other schemes might be available depending on your circumstances.
+
+What should I consider before investing in property in the UK?|Before investing, consider factors like location, potential rental yield, long-term market trends, and associated risks such as property value depreciation or changes in demand.
+
+What do I need to know before renting a property in the UK?|You’ll need to sign a tenancy agreement, pay a deposit (usually 5 weeks' rent), and pass a referencing check. Rent prices can vary greatly depending on location and property type.
+
+How can I avoid common property scams?|To avoid scams, ensure that any transactions go through a regulated agent or solicitor. Never transfer money without verifying the legitimacy of the transaction or party involved.
+
+What are the common costs involved in buying a property?|Common costs include the property price, Stamp Duty, legal fees, surveyor fees, mortgage fees, and moving costs. Be sure to budget for these extras.
+
+How do I choose the right mortgage type for me?|The choice depends on your financial situation. Fixed-rate mortgages offer stable payments, while variable rates can fluctuate. Consult a mortgage broker to help you decide.
+
+
